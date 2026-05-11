@@ -1,0 +1,44 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npx convex *)",
+      "mcp__plugin_playwright_playwright__browser_snapshot",
+      "mcp__plugin_playwright_playwright__browser_type",
+      "Bash(kill 13870)",
+      "mcp__plugin_playwright_playwright__browser_evaluate",
+      "mcp__plugin_playwright_playwright__browser_fill_form",
+      "Bash(kill 14892)",
+      "Bash(echo \"Server PID: $!\")",
+      "Bash(kill 17272)",
+      "Bash(kill 18360)",
+      "Bash(xargs kill)",
+      "Bash(kill 19043)",
+      "mcp__plugin_playwright_playwright__browser_console_messages",
+      "Bash(curl -sI \"https://cdn.akamai.steamstatic.com/steam/apps/3527290/header.jpg\")",
+      "Bash(curl -sI \"https://cdn.akamai.steamstatic.com/steam/apps/3124540/header.jpg\")",
+      "Bash(curl -sI \"https://cdn.akamai.steamstatic.com/steam/apps/3527290/library_600x900.jpg\")",
+      "Bash(curl -sI \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3527290/header.jpg\")",
+      "Bash(curl -sI \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3124540/header.jpg\")",
+      "Bash(curl -sI \"https://store.steampowered.com/api/appdetails?appids=3527290\")",
+      "Bash(curl -s \"https://store.steampowered.com/api/appdetails?appids=3527290\")",
+      "Bash(curl -s \"https://store.steampowered.com/api/appdetails?appids=3124540\")",
+      "Bash(curl -sI \"https://cdn.akamai.steamstatic.com/steam/apps/3527290/capsule_616x353.jpg\")",
+      "Bash(curl -sI \"https://cdn.akamai.steamstatic.com/steam/apps/3124540/capsule_616x353.jpg\")",
+      "Bash(curl -sI \"https://cdn.akamai.steamstatic.com/steam/apps/1245620/capsule_616x353.jpg\")",
+      "Bash(curl -sI \"https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/3527290/capsule_616x353.jpg\")",
+      "Bash(curl -sI \"https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/3124540/capsule_616x353.jpg\")",
+      "Bash(curl -sIL \"https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/3527290/capsule_616x353.jpg\")",
+      "Bash(curl -sIL \"https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/3527290/library_600x900.jpg\")",
+      "Bash(curl -sI -o /dev/null -w '%{http_code}' https://cdn.akamai.steamstatic.com/steam/apps/3527290/__TRACKED_VAR__)",
+      "Bash(curl -sI -o /dev/null -w '%{http_code}' https://cdn.akamai.steamstatic.com/steam/apps/3124540/__TRACKED_VAR__)",
+      "Bash(curl -sIL -o /dev/null -w '%{http_code}' https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3527290/__TRACKED_VAR__)",
+      "Bash(curl -sIL -o /dev/null -w '%{http_code}' https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3124540/__TRACKED_VAR__)",
+      "mcp__plugin_playwright_playwright__browser_handle_dialog"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "context7"
+  ]
+}

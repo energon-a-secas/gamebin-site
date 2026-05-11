@@ -1,0 +1,40 @@
+---
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#0f172a"
+    primaryTextColor: "#e2e8f0"
+    primaryBorderColor: "#0063e5"
+    lineColor: "#38bdf8"
+    secondaryColor: "#1e293b"
+    tertiaryColor: "#1e293b"
+    clusterBkg: "#f0f7ff"
+    clusterBorder: "#bfdbfe"
+    edgeLabelBackground: "#e8f0ff"
+    mainBkg: "#0f172a"
+    nodeBorder: "#0063e5"
+    titleColor: "#1e1b4b"
+    fontFamily: "ui-sans-serif, system-ui, -apple-system, sans-serif"
+    fontSize: "13px"
+---
+
+flowchart TB
+    User([User]) --> HTML["index.html\nApp shell"]
+
+    subgraph Frontend["Frontend (ES Modules)"]
+        HTML --> app["app.js\nEntry point"]
+        app --> state["state.js\nShared state + localStorage"]
+        app --> render["render.js\nDOM rendering"]
+        app --> events["events.js\nUser interactions + modals"]
+        app --> utils["utils.js\nHelpers"]
+    end
+
+    subgraph Backend["Convex Backend"]
+        state -->|"mutations / queries"| auth["auth.ts\nLogin / register / session"]
+        state -->|"mutations / queries"| lists["lists.ts\nCRUD: lists, games, categories, likes"]
+        auth & lists --> DB[("Database\nusers · lists · games · categories · likes")]
+    end
+
+    state <-->|"gamebin-state"| LS[("localStorage")]
+    state <-->|"gamebin_lists / gamebin_games"| LS
+    state <-->|"gamebin_categories / gamebin_likes"| LS
