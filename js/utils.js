@@ -53,16 +53,16 @@ export function timeAgo(ts) {
 }
 
 export const LIST_COLORS = [
-  '#6366f1', '#a855f7', '#ec4899', '#ef4444',
-  '#f97316', '#eab308', '#22c55e', '#14b8a6',
-  '#06b6d4', '#3b82f6', '#8b5cf6', '#f43f5e',
+  '#66c0f4', '#5ee6a8', '#e85d5d', '#c084fc',
+  '#5bc0de', '#f472b6', '#eab308', '#14b8a6',
+  '#f97316', '#3b82f6', '#a3a3a3', '#f43f5e',
 ];
 
 export const DEFAULT_CATEGORIES = [
-  { name: 'Bought', color: '#34d399', _id: 'cat_default_0' },
-  { name: 'Wishlist', color: '#fbbf24', _id: 'cat_default_1' },
-  { name: 'Playing', color: '#60a5fa', _id: 'cat_default_2' },
-  { name: 'Backlog', color: '#a78bfa', _id: 'cat_default_3' },
-  { name: 'Dropped', color: '#f87171', _id: 'cat_default_4' },
+  { name: 'Bought', color: '#5ee6a8', _id: 'cat_default_0' },
+  { name: 'Wishlist', color: '#eab308', _id: 'cat_default_1' },
+  { name: 'Playing', color: '#66c0f4', _id: 'cat_default_2' },
+  { name: 'Backlog', color: '#c084fc', _id: 'cat_default_3' },
+  { name: 'Dropped', color: '#e85d5d', _id: 'cat_default_4' },
   { name: 'Co-op', color: '#f472b6', _id: 'cat_default_5' },
 ];

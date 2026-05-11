@@ -3,7 +3,7 @@
 import { state, save } from './state.js';
 import { render } from './render.js';
 import { showToast, copyToClipboard, LIST_COLORS, DEFAULT_CATEGORIES, escHtml, debounce } from './utils.js';
-import { extractSteamAppId, buildSteamInfoFromUrl, searchLocalGames, getSteamCoverUrl } from './steam.js';
+import { extractSteamAppId, buildSteamInfoFromUrl, searchLocalGames, getSteamCoverUrl, fetchSteamTags } from './steam.js';
 import { renderAvatarSvg, AVATARS, AVATAR_COLORS, BANNER_PRESETS, CURRENCIES, getBannerGradient } from './profile.js';
 import { fetchPrices } from './prices.js';
 import * as api from './api.js';
@@ -98,12 +98,7 @@ function bindEvents(s) {
     document.body.classList.add('logged-in');
     authPanel.classList.remove('open');
     showToast('Account created!');
-
-    // Create default categories
-    for (const c of DEFAULT_CATEGORIES) {
-      await api.createCategory({ userId: username, name: c.name, color: c.color });
-    }
-    state.categories = await api.getCategories(username);
+    state.categories = [];
     await loadMyLists();
     render(state);
   });
@@ -154,6 +149,21 @@ function bindEvents(s) {
       if (carouselNext) {
         const track = document.querySelector('.carousel-track');
         if (track) track.scrollBy({ left: 300, behavior: 'smooth' });
+        return;
+      }
+
+      const viewBtn = target.closest('[data-view]');
+      if (viewBtn) {
+        state.currentView = viewBtn.dataset.view;
+        document.querySelectorAll('[data-view]').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll(`[data-view="${viewBtn.dataset.view}"]`).forEach(b => b.classList.add('active'));
+        save(state);
+        render(state);
+        return;
+      }
+
+      if (target.id === 'btnLandingCta' || target.closest('#btnLandingCta')) {
+        document.getElementById('authPanel')?.classList.add('open');
         return;
       }
 
@@ -221,6 +231,10 @@ function bindEvents(s) {
         handleToggleLike();
         return;
       }
+      if (target.id === 'btnCopyLink' || target.closest('#btnCopyLink')) {
+        copyToClipboard(window.location.href);
+        return;
+      }
       if (target.id === 'btnAddGame' || target.closest('#btnAddGame')) { openAddGameModal(); return; }
       if (target.id === 'btnEditProfile' || target.closest('#btnEditProfile')) { openEditProfileModal(); return; }
       if (target.id === 'btnBackHome' || target.closest('#btnBackHome')) {
@@ -243,6 +257,14 @@ function bindEvents(s) {
 
       if (target.id === 'btnManageVoters' || target.closest('#btnManageVoters')) {
         openManageVotersModal();
+        return;
+      }
+
+      const sortChip = target.closest('[data-sort]');
+      if (sortChip) {
+        state.sortMode = sortChip.dataset.sort;
+        save(state);
+        render(state);
         return;
       }
 
@@ -514,9 +536,13 @@ function openAddGameModal() {
         <label>Notes</label>
         <textarea id="gameNotes" placeholder="Your thoughts, tips, or recommendation..." maxlength="500"></textarea>
       </div>
+      <div class="form-group" id="steamTagsGroup" hidden>
+        <label>Steam Tags</label>
+        <div class="category-selector" id="steamTagsDisplay"></div>
+      </div>
       ${state.categories.length > 0
         ? `<div class="form-group">
-            <label>Categories</label>
+            <label>Custom Tags</label>
             <div class="category-selector" id="gameCategories">
               ${catChips}
             </div>
@@ -533,10 +559,13 @@ function openAddGameModal() {
   overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
 
   let steamAppId = null;
+  let steamTags = [];
 
   const searchInput = overlay.querySelector('#gameSearchInput');
   const resultsEl = overlay.querySelector('#steamResults');
   const previewEl = overlay.querySelector('#steamPreview');
+  const steamTagsGroup = overlay.querySelector('#steamTagsGroup');
+  const steamTagsDisplay = overlay.querySelector('#steamTagsDisplay');
 
   const doSearch = debounce((query) => {
     const info = buildSteamInfoFromUrl(query);
@@ -563,7 +592,7 @@ function openAddGameModal() {
 
   searchInput.addEventListener('input', () => doSearch(searchInput.value.trim()));
 
-  resultsEl.addEventListener('click', (e) => {
+  resultsEl.addEventListener('click', async (e) => {
     const item = e.target.closest('[data-appid]');
     if (!item) return;
     resultsEl.hidden = true;
@@ -573,11 +602,22 @@ function openAddGameModal() {
     applySteamInfo(info, overlay);
     steamAppId = appId;
     searchInput.value = '';
+
+    steamTags = await fetchSteamTags(appId);
+    if (steamTags.length > 0 && steamTagsDisplay) {
+      steamTagsDisplay.innerHTML = steamTags.map(t =>
+        `<span class="steam-tag-chip"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>${escHtml(t)}</span>`
+      ).join('');
+      steamTagsGroup.hidden = false;
+    }
   });
 
   overlay.querySelector('#steamPreviewClear')?.addEventListener('click', () => {
     previewEl.hidden = true;
     steamAppId = null;
+    steamTags = [];
+    if (steamTagsGroup) steamTagsGroup.hidden = true;
+    if (steamTagsDisplay) steamTagsDisplay.innerHTML = '';
     overlay.querySelector('#gameName').value = '';
     overlay.querySelector('#gameCover').value = '';
   });
@@ -604,6 +644,7 @@ function openAddGameModal() {
         notes: overlay.querySelector('#gameNotes')?.value.trim() || '',
         categories: [...selectedCats],
         steamAppId: steamAppId || undefined,
+        steamTags: steamTags.length > 0 ? steamTags : undefined,
       });
       if (state.currentView === 'shared') {
         overlay.remove();
@@ -659,9 +700,16 @@ function openEditGameModal(gameId) {
         <label>Notes</label>
         <textarea id="editGameNotes" maxlength="500">${escHtml(game.notes || '')}</textarea>
       </div>
+      ${game.steamTags && game.steamTags.length > 0
+        ? `<div class="form-group">
+            <label>Steam Tags</label>
+            <div class="category-selector">${game.steamTags.map(t => `<span class="steam-tag-chip"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>${escHtml(t)}</span>`).join('')}</div>
+          </div>`
+        : ''
+      }
       ${state.categories.length > 0
         ? `<div class="form-group">
-            <label>Categories</label>
+            <label>Custom Tags</label>
             <div class="category-selector">${catChips}</div>
           </div>`
         : ''
@@ -698,6 +746,7 @@ function openEditGameModal(gameId) {
         notes: overlay.querySelector('#editGameNotes')?.value.trim() || '',
         categories: [...selectedCats],
         steamAppId: game.steamAppId || undefined,
+        steamTags: game.steamTags || undefined,
       });
       state.games = await api.getGamesByList(state.activeListId);
       render(state);
@@ -740,6 +789,22 @@ function openGameDetailModal(gameId) {
     }
   }
 
+  const steamTagsHtml = (game.steamTags && game.steamTags.length > 0)
+    ? `<div class="detail-steam-tags">
+        <span class="detail-section-label">Steam Tags</span>
+        <div class="detail-tags-wrap">${game.steamTags.map(t =>
+          `<span class="steam-tag-chip"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>${escHtml(t)}</span>`
+        ).join('')}</div>
+      </div>`
+    : (game.steamAppId ? `<div class="detail-steam-tags"><span class="detail-section-label">Steam Tags</span><div class="detail-tags-wrap detail-tags-loading" id="detailSteamTags">Loading...</div></div>` : '');
+
+  const categoriesHtml = (game.categories && game.categories.length > 0)
+    ? `<div class="detail-categories">
+        <span class="detail-section-label">Tags</span>
+        <div class="detail-tags-wrap">${game.categories.map(c => `<span class="category-badge" style="background:rgba(102,192,244,.15);color:var(--accent-bright);border:1px solid rgba(102,192,244,.2)">${escHtml(c)}</span>`).join('')}</div>
+      </div>`
+    : '';
+
   const storeBtn = game.steamAppId
     ? `<a class="btn btn-sm detail-store-btn" href="https://store.steampowered.com/app/${escHtml(game.steamAppId)}/" target="_blank" rel="noopener">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
@@ -756,10 +821,8 @@ function openGameDetailModal(gameId) {
       <h2 class="detail-name">${escHtml(game.name)}</h2>
       ${priceHtml}
       ${game.notes ? `<p class="detail-notes">${escHtml(game.notes)}</p>` : ''}
-      ${game.categories && game.categories.length > 0
-        ? `<div class="detail-categories">${game.categories.map(c => `<span class="category-badge" style="background:rgba(99,102,241,.15);color:var(--accent-bright);border:1px solid rgba(99,102,241,.2)">${escHtml(c)}</span>`).join('')}</div>`
-        : ''
-      }
+      ${steamTagsHtml}
+      ${categoriesHtml}
       <div class="detail-actions">
         ${storeBtn}
         ${canVote ? `
@@ -787,6 +850,21 @@ function openGameDetailModal(gameId) {
       overlay.remove();
     });
   });
+
+  if (game.steamAppId && (!game.steamTags || game.steamTags.length === 0)) {
+    fetchSteamTags(game.steamAppId).then(tags => {
+      const el = overlay.querySelector('#detailSteamTags');
+      if (!el || !document.body.contains(overlay)) return;
+      if (tags.length > 0) {
+        el.classList.remove('detail-tags-loading');
+        el.innerHTML = tags.map(t =>
+          `<span class="steam-tag-chip"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>${escHtml(t)}</span>`
+        ).join('');
+      } else {
+        el.closest('.detail-steam-tags')?.remove();
+      }
+    });
+  }
 }
 
 async function openManageVotersModal() {
@@ -950,7 +1028,7 @@ function openEditProfileModal() {
 
 function openAddCategory() {
   const name = document.getElementById('newCategoryName')?.value.trim();
-  const color = document.getElementById('newCategoryColor')?.value || '#6366f1';
+  const color = document.getElementById('newCategoryColor')?.value || '#66c0f4';
   if (!name || !state.user) return;
 
   if (state.categories.find(c => c.name === name)) {
@@ -1109,12 +1187,13 @@ async function loadData() {
   const params = new URLSearchParams(window.location.search);
   const sharedListId = params.get('list');
 
-  if (state.user) {
-    try {
-      const profile = await api.getProfile(state.user.username);
-      state.profile = profile || state.profile;
-    } catch { /* ignore */ }
-  }
+  const profilePromise = state.user
+    ? api.getProfile(state.user.username).then(p => { state.profile = p || state.profile; }).catch(() => {})
+    : Promise.resolve();
+
+  const publicPromise = loadPublicLists();
+
+  await profilePromise;
 
   if (sharedListId) {
     state.currentView = 'shared';
@@ -1130,7 +1209,7 @@ async function loadData() {
     } catch { /* ignore */ }
   }
 
-  await loadPublicLists();
+  await publicPromise;
 
   if (state.activeListId && state.user && state.games.length > 0) {
     loadPricesForGames(state.games);

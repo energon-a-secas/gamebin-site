@@ -68,6 +68,12 @@ function renderGameCard(g) {
       }).join('')}</div>`
     : '';
 
+  const steamTagBadges = (g.steamTags && g.steamTags.length > 0)
+    ? `<div class="game-card-categories">${g.steamTags.slice(0, 4).map(t =>
+        `<span class="steam-tag-chip"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>${escHtml(t)}</span>`
+      ).join('')}</div>`
+    : '';
+
   const steamBadge = g.steamAppId
     ? `<div class="steam-badge" title="From Steam">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -127,6 +133,7 @@ function renderGameCard(g) {
         ${storeLink}
         ${g.notes ? `<div class="game-card-notes">${escHtml(g.notes)}</div>` : ''}
         ${catBadges}
+        ${steamTagBadges}
       </div>
     </div>`;
 }
@@ -169,6 +176,102 @@ function renderToolbar(hasGames) {
     </div>`;
 }
 
+function renderLanding() {
+  const publicLists = state._publicLists || [];
+  const totalLists = publicLists.length;
+  const totalGames = publicLists.reduce((sum, l) => sum + (l._gameCount || 0), 0);
+  const totalUsers = new Set(publicLists.map(l => l._owner?.username).filter(Boolean)).size;
+
+  return `
+    <div class="hero-section">
+      <div class="hero-badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        Community-Powered
+      </div>
+      <h1 class="hero-title">Curate your <span>game collection</span></h1>
+      <p class="hero-desc">Create beautiful lists of your favorite games. Track prices, organize with tags, and share with friends.</p>
+      <div class="hero-actions">
+        <button class="hero-cta" id="btnLandingCta">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          Get Started
+        </button>
+        <button class="hero-cta-secondary" data-view="discover">
+          Browse Lists
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+      <div class="landing-stats">
+        <div class="landing-stat"><div class="landing-stat-value">${totalLists}</div><div class="landing-stat-label">Lists</div></div>
+        <div class="landing-stat"><div class="landing-stat-value">${totalGames}</div><div class="landing-stat-label">Games</div></div>
+        <div class="landing-stat"><div class="landing-stat-value">${totalUsers}</div><div class="landing-stat-label">Curators</div></div>
+      </div>
+    </div>
+
+    ${publicLists.length > 0 ? `
+      <div class="section-header">
+        <div class="section-header-title">Community Lists</div>
+        <a class="section-header-link" data-view="discover" href="#discover">View all →</a>
+      </div>
+      <div class="discover-grid" style="margin-bottom: 32px;">
+        ${publicLists.slice(0, 6).map(l => renderDiscoverCard(l)).join('')}
+      </div>
+    ` : ''}
+
+    <div class="hiw-section">
+      <div class="section-header">
+        <div class="section-header-title">How it works</div>
+      </div>
+      <div class="hiw-grid">
+        <div class="hiw-card">
+          <div class="hiw-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          </div>
+          <div class="hiw-title">Create a List</div>
+          <div class="hiw-desc">Start a collection for any genre, mood, or platform.</div>
+        </div>
+        <div class="hiw-card">
+          <div class="hiw-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          </div>
+          <div class="hiw-title">Add Games</div>
+          <div class="hiw-desc">Search Steam or add custom titles with cover art.</div>
+        </div>
+        <div class="hiw-card">
+          <div class="hiw-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+          </div>
+          <div class="hiw-title">Share</div>
+          <div class="hiw-desc">Share your list with a link. Friends can vote on picks.</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderDiscoverCard(l) {
+  return `
+    <div class="discover-card" data-shared-list="${escHtml(l._id)}">
+      <div class="discover-card-covers">
+        ${l._previewCovers.length > 0
+          ? l._previewCovers.map(url => `<img src="${escHtml(url)}" alt="" loading="lazy">`).join('')
+          : `<div class="discover-card-empty"><span>${escHtml(l.name.charAt(0))}</span></div>`
+        }
+      </div>
+      <div class="discover-card-overlay">
+        <div class="discover-card-owner">
+          ${renderAvatarSvg(l._owner.avatar, 20)}
+          <span>${escHtml(l._owner.username)}</span>
+        </div>
+        <div class="discover-card-name">${escHtml(l.name)}</div>
+        <div class="discover-card-meta">${l._gameCount} game${l._gameCount !== 1 ? 's' : ''}</div>
+      </div>
+      ${l._likesCount ? `<div class="discover-card-likes">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        ${l._likesCount}
+      </div>` : ''}
+    </div>`;
+}
+
 function renderMyLists() {
   const { lists, games, activeListId, categories } = state;
   const active = lists.find(l => l._id === activeListId);
@@ -178,7 +281,7 @@ function renderMyLists() {
   });
 
   if (!state.user) {
-    return renderCarousel(state._publicLists) + renderEmptyLists();
+    return renderLanding();
   }
 
   if (lists.length === 0) {
@@ -199,13 +302,34 @@ function renderMyLists() {
     const q = state.searchQuery.toLowerCase();
     listGames = listGames.filter(g =>
       g.name.toLowerCase().includes(q) ||
-      (g.notes && g.notes.toLowerCase().includes(q))
+      (g.notes && g.notes.toLowerCase().includes(q)) ||
+      (g.steamTags && g.steamTags.some(t => t.toLowerCase().includes(q))) ||
+      (g.categories && g.categories.some(c => c.toLowerCase().includes(q)))
     );
   }
 
   if (state.filterCategory) {
-    listGames = listGames.filter(g => g.categories && g.categories.includes(state.filterCategory));
+    listGames = listGames.filter(g =>
+      (g.categories && g.categories.includes(state.filterCategory)) ||
+      (g.steamTags && g.steamTags.includes(state.filterCategory))
+    );
   }
+
+  listGames = sortGames(listGames);
+
+  const allSteamTags = [...new Set(listGames.flatMap(g => g.steamTags || []))].sort();
+
+  const filterChips = [
+    ...categories.map(c => ({
+      type: 'custom',
+      name: c.name,
+      color: c.color,
+    })),
+    ...allSteamTags.map(t => ({
+      type: 'steam',
+      name: t,
+    })),
+  ];
 
   const totalInList = games.filter(g => g.listId === activeListId).length;
 
@@ -229,17 +353,25 @@ function renderMyLists() {
             <button class="btn btn-sm btn-ghost btn-danger-text" id="btnDeleteList">Delete</button>
           </div>
         </div>
-        ${categories.length > 0
-          ? `<div class="category-filter-row">
-              ${categories.map(c => `
-                <button class="category-chip ${state.filterCategory === c.name ? 'selected' : ''}" data-filter-cat="${escHtml(c.name)}">
-                  <span class="category-chip-dot" style="background:${escHtml(c.color)}"></span>
-                  ${escHtml(c.name)}
-                </button>
-              `).join('')}
+        ${filterChips.length > 0
+          ? `<div class="tag-filter-row">
+              ${filterChips.map(chip => {
+                const isSelected = state.filterCategory === chip.name;
+                if (chip.type === 'steam') {
+                  return `<button class="tag-chip-steam ${isSelected ? 'selected' : ''}" data-filter-cat="${escHtml(chip.name)}">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                    ${escHtml(chip.name)}
+                  </button>`;
+                }
+                return `<button class="category-chip ${isSelected ? 'selected' : ''}" data-filter-cat="${escHtml(chip.name)}">
+                  <span class="category-chip-dot" style="background:${escHtml(chip.color)}"></span>
+                  ${escHtml(chip.name)}
+                </button>`;
+              }).join('')}
             </div>`
           : ''
         }
+        ${totalInList > 1 ? renderSortBar() : ''}
         ${renderGamesGrid(listGames)}
       </div>
     </div>`;
@@ -253,7 +385,7 @@ function renderCategories() {
       <p class="section-desc">Create reusable tags to organize games across all your lists.</p>
       <div class="category-add-row">
         <input type="text" id="newCategoryName" placeholder="Category name" maxlength="30">
-        <input type="color" id="newCategoryColor" value="#6366f1" class="color-input">
+        <input type="color" id="newCategoryColor" value="#66c0f4" class="color-input">
         <button class="btn btn-primary" id="btnAddCategory">Add</button>
       </div>
       <div class="category-list">
@@ -357,12 +489,15 @@ function renderCarousel(lists) {
 }
 
 function renderDiscover() {
+  const publicLists = state._publicLists || [];
   return `
     <div class="discover-view">
-      ${renderCarousel(state._publicLists)}
-      ${state._publicLists.length === 0
+      <div class="section-header" style="margin-bottom: 20px;">
+        <div class="section-header-title">Discover</div>
+      </div>
+      ${publicLists.length === 0
         ? `<div class="empty-state"><div class="empty-state-text">No public lists yet. Create one and share it!</div></div>`
-        : ''
+        : `<div class="discover-grid">${publicLists.map(l => renderDiscoverCard(l)).join('')}</div>`
       }
     </div>`;
 }
@@ -391,6 +526,53 @@ function renderPriceSummary(games) {
   return `<div class="price-summary-bar">${parts.join('<span class="price-summary-sep"></span>')}</div>`;
 }
 
+function sortGames(games) {
+  const mode = state.sortMode || 'votes';
+  const sorted = [...games];
+
+  switch (mode) {
+    case 'votes':
+      return sorted.sort((a, b) => getGameScore(b._id) - getGameScore(a._id));
+    case 'sale':
+      return sorted.sort((a, b) => {
+        const da = (state._prices && state._prices[a.steamAppId]?.discount) || 0;
+        const db = (state._prices && state._prices[b.steamAppId]?.discount) || 0;
+        return db - da;
+      });
+    case 'price-asc':
+      return sorted.sort((a, b) => {
+        const pa = (state._prices && state._prices[a.steamAppId]?.price) || Infinity;
+        const pb = (state._prices && state._prices[b.steamAppId]?.price) || Infinity;
+        return pa - pb;
+      });
+    case 'price-desc':
+      return sorted.sort((a, b) => {
+        const pa = (state._prices && state._prices[a.steamAppId]?.price) || 0;
+        const pb = (state._prices && state._prices[b.steamAppId]?.price) || 0;
+        return pb - pa;
+      });
+    case 'name':
+      return sorted.sort((a, b) => a.name.localeCompare(b.name));
+    default:
+      return sorted;
+  }
+}
+
+function renderSortBar() {
+  const options = [
+    { value: 'votes', label: 'Votes' },
+    { value: 'sale', label: 'On Sale' },
+    { value: 'price-asc', label: 'Price ↑' },
+    { value: 'price-desc', label: 'Price ↓' },
+    { value: 'name', label: 'A-Z' },
+  ];
+  return `
+    <div class="sort-bar">
+      <span class="sort-bar-label">Sort:</span>
+      ${options.map(o => `<button class="sort-chip ${state.sortMode === o.value ? 'active' : ''}" data-sort="${o.value}">${o.label}</button>`).join('')}
+    </div>`;
+}
+
 function renderSharedList(shared) {
   if (!shared) return '<div class="empty-state"><div class="empty-state-text">Loading...</div></div>';
   const { list, games, likesCount } = shared;
@@ -399,7 +581,7 @@ function renderSharedList(shared) {
 
   const isOwner = state.user && list.userId === state.user.username;
 
-  const sortedGames = [...games].sort((a, b) => getGameScore(b._id) - getGameScore(a._id));
+  const sortedGames = sortGames(games);
 
   return `
     <a class="shared-back" href="?" id="btnBackHome">
@@ -423,6 +605,9 @@ function renderSharedList(shared) {
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
           Voters
         </button>` : ''}
+        <button class="btn btn-sm btn-ghost" id="btnCopyLink" title="Copy link">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+        </button>
         <button class="shared-likes ${hasLiked ? 'liked' : ''}" id="btnLike">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="${hasLiked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
@@ -432,6 +617,7 @@ function renderSharedList(shared) {
       </div>
     </div>
     ${renderPriceSummary(sortedGames)}
+    ${renderSortBar()}
     ${renderGamesGrid(sortedGames)}
     <div class="shared-footer">
       ${games.length} game${games.length !== 1 ? 's' : ''} in this list

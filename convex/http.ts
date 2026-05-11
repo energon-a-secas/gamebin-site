@@ -1,5 +1,5 @@
 import { httpRouter } from "convex/server";
-import { getPrice, options } from "./steam";
+import { getPrice, getTags, options } from "./steam";
 
 const http = httpRouter();
 
@@ -10,7 +10,19 @@ http.route({
 });
 
 http.route({
+  path: "/steam/tags",
+  method: "GET",
+  handler: getTags,
+});
+
+http.route({
   path: "/steam/price",
+  method: "OPTIONS",
+  handler: options,
+});
+
+http.route({
+  path: "/steam/tags",
   method: "OPTIONS",
   handler: options,
 });

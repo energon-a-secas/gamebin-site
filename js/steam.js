@@ -160,3 +160,19 @@ export function searchLocalGames(query) {
       headerUrl: getSteamHeaderUrl(g.appId),
     }));
 }
+
+// ── Steam tags fetching via Convex HTTP proxy ───────────────
+
+const CONVEX_SITE = 'https://vivid-ferret-371.convex.site';
+
+export async function fetchSteamTags(appId) {
+  if (!appId) return [];
+  try {
+    const res = await fetch(`${CONVEX_SITE}/steam/tags?appId=${appId}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.tags || [];
+  } catch {
+    return [];
+  }
+}

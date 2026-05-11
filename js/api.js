@@ -88,6 +88,20 @@ export async function addGame(args) {
   return mutate('lists:addGame', args);
 }
 
+const CONVEX_SITE_URL = 'https://vivid-ferret-371.convex.site';
+
+export async function fetchSteamTags(appId) {
+  if (!appId) return [];
+  try {
+    const res = await fetch(`${CONVEX_SITE_URL}/steam/tags?appId=${appId}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.tags || [];
+  } catch {
+    return [];
+  }
+}
+
 export async function updateGame(args) {
   return mutate('lists:updateGame', args);
 }

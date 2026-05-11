@@ -13,7 +13,7 @@ export const createList = mutation({
     const id = await ctx.db.insert("lists", {
       name: args.name,
       userId: args.userId,
-      coverColor: args.coverColor || "#6366f1",
+      coverColor: args.coverColor || "#66c0f4",
       isPublic: args.isPublic !== false,
       createdAt: Date.now(),
       updatedAt: Date.now(),
@@ -84,11 +84,17 @@ export const getPublicLists = query({
         .filter(q => q.eq(q.field("username"), list.userId))
         .first();
 
+      const likes = await ctx.db
+        .query("likes")
+        .filter(q => q.eq(q.field("listId"), list._id))
+        .collect();
+
       result.push({
         ...list,
         _gameCount: games.length,
         _previewCovers: games.filter(g => g.coverUrl).slice(0, 4).map(g => g.coverUrl),
         _owner: profile || { username: list.userId, avatar: "warrior" },
+        _likesCount: likes.length,
       });
     }
     return result;
@@ -124,6 +130,7 @@ export const addGame = mutation({
     notes: v.optional(v.string()),
     categories: v.optional(v.array(v.string())),
     steamAppId: v.optional(v.string()),
+    steamTags: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
     const id = await ctx.db.insert("games", {
@@ -133,6 +140,7 @@ export const addGame = mutation({
       notes: args.notes || "",
       categories: args.categories || [],
       steamAppId: args.steamAppId || undefined,
+      steamTags: args.steamTags || [],
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -148,16 +156,19 @@ export const updateGame = mutation({
     notes: v.optional(v.string()),
     categories: v.optional(v.array(v.string())),
     steamAppId: v.optional(v.string()),
+    steamTags: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
-    await ctx.db.patch(args.gameId, {
+    const patch: Record<string, unknown> = {
       name: args.name,
       coverUrl: args.coverUrl,
       notes: args.notes,
       categories: args.categories,
       steamAppId: args.steamAppId,
       updatedAt: Date.now(),
-    });
+    };
+    if (args.steamTags !== undefined) patch.steamTags = args.steamTags;
+    await ctx.db.patch(args.gameId, patch);
   },
 });
 

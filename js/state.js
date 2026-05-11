@@ -13,6 +13,7 @@ export const state = {
   viewMode: 'grid',
   searchQuery: '',
   filterCategory: '',
+  sortMode: 'votes', // votes | sale | price-asc | price-desc | name
   loading: false,
   sharedList: null,
   _likedList: false,
@@ -33,15 +34,14 @@ export function loadSaved(s) {
       if (saved.searchQuery) s.searchQuery = saved.searchQuery;
       if (saved.filterCategory) s.filterCategory = saved.filterCategory;
       if (saved.currentView) s.currentView = saved.currentView;
+      if (saved.sortMode) s.sortMode = saved.sortMode;
     }
 
     const session = localStorage.getItem('gamebin_session');
     if (session) {
       const data = JSON.parse(session);
-      const stored = localStorage.getItem('gamebin_user_' + data.username);
-      if (stored) {
-        const user = JSON.parse(stored);
-        s.user = { username: user.username, id: 'local_' + data.username };
+      if (data.username) {
+        s.user = { username: data.username, id: 'local_' + data.username };
         document.getElementById('authUsername').textContent = data.username;
         document.getElementById('authUser').hidden = false;
         document.getElementById('authGate').hidden = true;
@@ -58,6 +58,7 @@ export function save(s) {
       searchQuery: s.searchQuery,
       filterCategory: s.filterCategory,
       currentView: s.currentView,
+      sortMode: s.sortMode,
     }));
   } catch { /* quota */ }
 }

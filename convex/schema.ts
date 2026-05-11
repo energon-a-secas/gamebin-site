@@ -33,6 +33,7 @@ export default defineSchema({
     notes: v.optional(v.string()),
     categories: v.array(v.string()),
     steamAppId: v.optional(v.string()),
+    steamTags: v.array(v.string()),
     createdAt: v.number(),
     updatedAt: v.number(),
   }),

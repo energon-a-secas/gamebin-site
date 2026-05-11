@@ -12,7 +12,7 @@ const AVATAR_COLORS = {
   healer: '#10b981',
   ranger: '#22c55e',
   paladin: '#f59e0b',
-  necro: '#6366f1',
+  necro: '#66c0f4',
   bard: '#ec4899',
   monk: '#f97316',
   druid: '#14b8a6',
