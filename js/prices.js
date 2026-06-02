@@ -1,6 +1,6 @@
 // ── Steam price fetching via Convex HTTP proxy ──────────────
 
-const CONVEX_URL = 'https://vivid-ferret-371.convex.site';
+const CONVEX_URL = 'https://amicable-chickadee-800.convex.site';
 const PRICE_CACHE_KEY = 'gamebin_prices';
 const CACHE_TTL = 3600000; // 1 hour
 

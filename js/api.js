@@ -1,6 +1,6 @@
 // ── Convex HTTP API client ───────────────────────────────────────
 
-const CONVEX_URL = 'https://vivid-ferret-371.convex.cloud';
+const CONVEX_URL = 'https://amicable-chickadee-800.convex.cloud';
 
 async function query(path, args = {}) {
   const res = await fetch(`${CONVEX_URL}/api/query`, {
@@ -88,7 +88,7 @@ export async function addGame(args) {
   return mutate('lists:addGame', args);
 }
 
-const CONVEX_SITE_URL = 'https://vivid-ferret-371.convex.site';
+const CONVEX_SITE_URL = 'https://amicable-chickadee-800.convex.site';
 
 export async function fetchSteamTags(appId) {
   if (!appId) return [];

@@ -163,7 +163,7 @@ export function searchLocalGames(query) {
 
 // ── Steam tags fetching via Convex HTTP proxy ───────────────
 
-const CONVEX_SITE = 'https://vivid-ferret-371.convex.site';
+const CONVEX_SITE = 'https://amicable-chickadee-800.convex.site';
 
 export async function fetchSteamTags(appId) {
   if (!appId) return [];

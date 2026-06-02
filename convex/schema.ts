@@ -6,7 +6,26 @@ export default defineSchema({
     username: v.string(),
     passwordHash: v.string(),
     createdAt: v.number(),
-  }),
+  }).index("by_username", ["username"]),
+
+  clerkAccountLinks: defineTable({
+    clerkSubject: v.string(),
+    legacyUsername: v.string(),
+    legacyConvexUserId: v.id("users"),
+    legacyRole: v.optional(v.string()),
+    linkedAt: v.number(),
+  })
+    .index("by_subject", ["clerkSubject"])
+    .index("by_legacy_username", ["legacyUsername"]),
+
+  userSettings: defineTable({
+    clerkSubject: v.string(),
+    key: v.string(),
+    value: v.string(),
+    updatedAt: v.number(),
+  })
+    .index("by_owner_key", ["clerkSubject", "key"])
+    .index("by_subject", ["clerkSubject"]),
 
   profiles: defineTable({
     username: v.string(),
@@ -33,7 +52,7 @@ export default defineSchema({
     notes: v.optional(v.string()),
     categories: v.array(v.string()),
     steamAppId: v.optional(v.string()),
-    steamTags: v.array(v.string()),
+    steamTags: v.optional(v.array(v.string())),
     createdAt: v.number(),
     updatedAt: v.number(),
   }),

@@ -11,6 +11,7 @@
 import type * as auth from "../auth.js";
 import type * as http from "../http.js";
 import type * as lists from "../lists.js";
+import type * as migration from "../migration.js";
 import type * as profiles from "../profiles.js";
 import type * as steam from "../steam.js";
 import type * as voters from "../voters.js";
@@ -26,6 +27,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   http: typeof http;
   lists: typeof lists;
+  migration: typeof migration;
   profiles: typeof profiles;
   steam: typeof steam;
   voters: typeof voters;
