@@ -384,7 +384,7 @@ function openNewListModal() {
   overlay.className = 'modal-overlay';
   overlay.innerHTML = `
     <div class="modal">
-      <button class="modal-close">&times;</button>
+      <button class="modal-close" aria-label="Close">&times;</button>
       <h2>New List</h2>
       <div class="form-group">
         <label>Name</label>
@@ -446,7 +446,7 @@ function openEditListModal() {
   overlay.className = 'modal-overlay';
   overlay.innerHTML = `
     <div class="modal">
-      <button class="modal-close">&times;</button>
+      <button class="modal-close" aria-label="Close">&times;</button>
       <h2>Edit List</h2>
       <div class="form-group">
         <label>Name</label>
@@ -507,7 +507,7 @@ function openAddGameModal() {
 
   overlay.innerHTML = `
     <div class="modal modal-add-game">
-      <button class="modal-close">&times;</button>
+      <button class="modal-close" aria-label="Close">&times;</button>
       <h2>Add Game</h2>
       <div class="form-group">
         <label>Search or paste Steam URL</label>
@@ -685,7 +685,7 @@ function openEditGameModal(gameId) {
 
   overlay.innerHTML = `
     <div class="modal">
-      <button class="modal-close">&times;</button>
+      <button class="modal-close" aria-label="Close">&times;</button>
       <h2>Edit Game</h2>
       ${game.coverUrl ? `<img src="${escHtml(game.coverUrl)}" class="modal-game-preview" alt="">` : ''}
       <div class="form-group">
@@ -816,7 +816,7 @@ function openGameDetailModal(gameId) {
   overlay.className = 'modal-overlay';
   overlay.innerHTML = `
     <div class="modal modal-detail">
-      <button class="modal-close">&times;</button>
+      <button class="modal-close" aria-label="Close">&times;</button>
       ${game.coverUrl ? `<img src="${escHtml(game.coverUrl)}" class="detail-cover" alt="${escHtml(game.name)}">` : ''}
       <h2 class="detail-name">${escHtml(game.name)}</h2>
       ${priceHtml}
@@ -827,11 +827,11 @@ function openGameDetailModal(gameId) {
         ${storeBtn}
         ${canVote ? `
           <div class="vote-controls">
-            <button class="vote-btn vote-up ${userVote === 1 ? 'active' : ''}" data-vote="1" data-game="${escHtml(gameId)}">
+            <button class="vote-btn vote-up ${userVote === 1 ? 'active' : ''}" data-vote="1" data-game="${escHtml(gameId)}" aria-label="Upvote">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
             </button>
             <span class="vote-score ${score > 0 ? 'positive' : score < 0 ? 'negative' : ''}">${score}</span>
-            <button class="vote-btn vote-down ${userVote === -1 ? 'active' : ''}" data-vote="-1" data-game="${escHtml(gameId)}">
+            <button class="vote-btn vote-down ${userVote === -1 ? 'active' : ''}" data-vote="-1" data-game="${escHtml(gameId)}" aria-label="Downvote">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
             </button>
           </div>
@@ -878,7 +878,7 @@ async function openManageVotersModal() {
   overlay.className = 'modal-overlay';
   overlay.innerHTML = `
     <div class="modal">
-      <button class="modal-close">&times;</button>
+      <button class="modal-close" aria-label="Close">&times;</button>
       <h2>Manage Voters</h2>
       <p class="modal-desc">Allow other users to upvote or downvote games in this list.</p>
       <div class="form-group">
@@ -948,7 +948,7 @@ function openEditProfileModal() {
   overlay.className = 'modal-overlay';
   overlay.innerHTML = `
     <div class="modal modal-profile">
-      <button class="modal-close">&times;</button>
+      <button class="modal-close" aria-label="Close">&times;</button>
       <h2>Edit Profile</h2>
       <div class="form-group">
         <label>Avatar</label>
