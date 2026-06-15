@@ -200,11 +200,12 @@ function renderLanding() {
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
       </div>
-      <div class="landing-stats">
-        <div class="landing-stat"><div class="landing-stat-value">${totalLists}</div><div class="landing-stat-label">Lists</div></div>
-        <div class="landing-stat"><div class="landing-stat-value">${totalGames}</div><div class="landing-stat-label">Games</div></div>
-        <div class="landing-stat"><div class="landing-stat-value">${totalUsers}</div><div class="landing-stat-label">Curators</div></div>
-      </div>
+      ${totalLists > 0 ? `
+      <p class="landing-summary">
+        <strong>${totalLists}</strong> public ${totalLists === 1 ? 'list' : 'lists'} ·
+        <strong>${totalGames}</strong> ${totalGames === 1 ? 'game' : 'games'} ·
+        <strong>${totalUsers}</strong> ${totalUsers === 1 ? 'curator' : 'curators'}
+      </p>` : ''}
     </div>
 
     ${publicLists.length > 0 ? `
