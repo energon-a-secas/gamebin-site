@@ -5,3 +5,11 @@ npm-debug.log*
 .env
 .env.*
 convex/.env.local
+
+# ── Neorgon base (enforced by smoke check 20) ─────────────────────────────────
+!.env.example
+.forge/
+__pycache__/
+*.py[cod]
+skills-archived/
+*.log
