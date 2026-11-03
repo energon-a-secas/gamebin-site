@@ -19,7 +19,6 @@ Then open http://localhost:8841. It must be served over HTTP. The app is ES modu
 | `js/events.js` | 1222 | none |
 | `js/render.js` | 648 | `render` |
 | `js/steam.js` | 179 | `extractSteamAppId`, `extractNameFromUrl`, `getSteamCoverUrl`, `getSteamHeaderUrl`, `buildSteamInfoFromUrl` |
-| `js/vendor/neorgon-auth.js` | 167 | `initNeorgonClerkConvex`, `neorgonSignOut`, `neorgonDisplayLabel` |
 | `js/api.js` | 152 | `login`, `register`, `userExists`, `getProfile`, `saveProfile` |
 | `js/profile.js` | 88 | `getProfile`, `saveProfile`, `renderAvatarSvg`, `getBannerGradient` |
 | `js/utils.js` | 69 | `escHtml`, `showToast`, `debounce`, `copyToClipboard`, `timeAgo` |
