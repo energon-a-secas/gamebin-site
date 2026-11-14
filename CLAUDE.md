@@ -16,8 +16,8 @@ Then open http://localhost:8841. It must be served over HTTP. The app is ES modu
 
 | Module | Lines | Owns |
 |---|---:|---|
-| `js/events.js` | 1222 | none |
-| `js/render.js` | 648 | `render` |
+| `js/events.js` | 1220 | none |
+| `js/render.js` | 616 | `render` |
 | `js/steam.js` | 179 | `extractSteamAppId`, `extractNameFromUrl`, `getSteamCoverUrl`, `getSteamHeaderUrl`, `buildSteamInfoFromUrl` |
 | `js/api.js` | 152 | `login`, `register`, `userExists`, `getProfile`, `saveProfile` |
 | `js/profile.js` | 88 | `getProfile`, `saveProfile`, `renderAvatarSvg`, `getBannerGradient` |
@@ -25,6 +25,7 @@ Then open http://localhost:8841. It must be served over HTTP. The app is ES modu
 | `js/prices.js` | 66 | `fetchPrice`, `fetchPrices`, `formatCLP` |
 | `js/state.js` | 65 | `state`, `loadSaved`, `save` |
 | `js/app.js` | 23 | none |
+| `js/auth-panel.js` | 19 | `setAuthPanelOpen`, `toggleAuthPanel` |
 
 Vendored from `packages/neorgon-ui/`: never edit in place, run the sync script instead: `js/neorgon-footer.js`, `js/neorgon-header.js`.
 
@@ -44,7 +45,8 @@ Vendored from `packages/neorgon-ui/`: never edit in place, run the sync script i
 
 ## Gotchas
 
-TODO: the non-obvious failures. What broke here before, what looks wrong but is deliberate, what a reasonable change would break. This is the highest-value section, leave it empty rather than filling it with generic advice.
+- Open and close the sign-in panel only through `js/auth-panel.js` (`setAuthPanelOpen`, `toggleAuthPanel`). The panel collapses with `max-height`, so its tabs and fields stay focusable unless it is `inert` while closed; toggling the `open` class directly puts them back in the tab order.
+- The CSP in `index.html` is an allowlist: a host the code loads from must be in the matching directive. Covers load from `cdn.akamai.steamstatic.com`, the one host `js/steam.js` builds, and every cover was blocked until `img-src` listed it. `connect-src` does not list `amicable-chickadee-800.convex.site`, so the Steam price and tag lookups in `js/prices.js`, `js/steam.js` and `js/api.js` fail silently (as of 2026-11-14, waiting on the owner's call).
 
 ## Do not touch
 
