@@ -183,30 +183,27 @@ function renderLanding() {
   const totalUsers = new Set(publicLists.map(l => l._owner?.username).filter(Boolean)).size;
 
   return `
-    <div class="hero-section">
-      <div class="hero-badge">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-        Community-Powered
+    <section class="hero-section" aria-labelledby="landingTitle">
+      <div class="hero-head">
+        <h2 class="hero-title" id="landingTitle">Curate your game collection</h2>
+        ${totalLists > 0 ? `
+        <p class="landing-summary">
+          <strong>${totalLists}</strong> public ${totalLists === 1 ? 'list' : 'lists'} ·
+          <strong>${totalGames}</strong> ${totalGames === 1 ? 'game' : 'games'} ·
+          <strong>${totalUsers}</strong> ${totalUsers === 1 ? 'curator' : 'curators'}
+        </p>` : ''}
       </div>
-      <h1 class="hero-title">Curate your <span>game collection</span></h1>
-      <p class="hero-desc">Create beautiful lists of your favorite games. Track prices, organize with tags, and share with friends.</p>
       <div class="hero-actions">
-        <button class="hero-cta" id="btnLandingCta">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        <button class="hero-cta" id="btnLandingCta" aria-controls="authPanel">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
           Get Started
         </button>
         <button class="hero-cta-secondary" data-view="discover">
           Browse Lists
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
       </div>
-      ${totalLists > 0 ? `
-      <p class="landing-summary">
-        <strong>${totalLists}</strong> public ${totalLists === 1 ? 'list' : 'lists'} ·
-        <strong>${totalGames}</strong> ${totalGames === 1 ? 'game' : 'games'} ·
-        <strong>${totalUsers}</strong> ${totalUsers === 1 ? 'curator' : 'curators'}
-      </p>` : ''}
-    </div>
+    </section>
 
     ${publicLists.length > 0 ? `
       <div class="section-header">
@@ -217,35 +214,6 @@ function renderLanding() {
         ${publicLists.slice(0, 6).map(l => renderDiscoverCard(l)).join('')}
       </div>
     ` : ''}
-
-    <div class="hiw-section">
-      <div class="section-header">
-        <div class="section-header-title">How it works</div>
-      </div>
-      <div class="hiw-grid">
-        <div class="hiw-card">
-          <div class="hiw-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-          </div>
-          <div class="hiw-title">Create a List</div>
-          <div class="hiw-desc">Start a collection for any genre, mood, or platform.</div>
-        </div>
-        <div class="hiw-card">
-          <div class="hiw-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-          </div>
-          <div class="hiw-title">Add Games</div>
-          <div class="hiw-desc">Search Steam or add custom titles with cover art.</div>
-        </div>
-        <div class="hiw-card">
-          <div class="hiw-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
-          </div>
-          <div class="hiw-title">Share</div>
-          <div class="hiw-desc">Share your list with a link. Friends can vote on picks.</div>
-        </div>
-      </div>
-    </div>
   `;
 }
 

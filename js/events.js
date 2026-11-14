@@ -7,6 +7,7 @@ import { extractSteamAppId, buildSteamInfoFromUrl, searchLocalGames, getSteamCov
 import { renderAvatarSvg, AVATARS, AVATAR_COLORS, BANNER_PRESETS, CURRENCIES, getBannerGradient } from './profile.js';
 import { fetchPrices } from './prices.js';
 import * as api from './api.js';
+import { setAuthPanelOpen, toggleAuthPanel } from './auth-panel.js';
 
 function hashStr(s) {
   let h = 0;
@@ -20,11 +21,8 @@ function hashStr(s) {
 
 function bindEvents(s) {
   const authToggle = document.getElementById('authToggle');
-  const authPanel = document.getElementById('authPanel');
 
-  authToggle?.addEventListener('click', () => {
-    authPanel.classList.toggle('open');
-  });
+  authToggle?.addEventListener('click', toggleAuthPanel);
 
   document.querySelectorAll('.auth-tab').forEach(tab => {
     tab.addEventListener('click', () => {
@@ -54,7 +52,7 @@ function bindEvents(s) {
         document.getElementById('authUser').hidden = false;
         document.getElementById('authGate').hidden = true;
         document.body.classList.add('logged-in');
-        authPanel.classList.remove('open');
+        setAuthPanelOpen(false);
         showToast('Welcome back, ' + username);
         await loadMyLists();
         render(state);
@@ -96,7 +94,7 @@ function bindEvents(s) {
     document.getElementById('authUser').hidden = false;
     document.getElementById('authGate').hidden = true;
     document.body.classList.add('logged-in');
-    authPanel.classList.remove('open');
+    setAuthPanelOpen(false);
     showToast('Account created!');
     state.categories = [];
     await loadMyLists();
@@ -163,7 +161,7 @@ function bindEvents(s) {
       }
 
       if (target.id === 'btnLandingCta' || target.closest('#btnLandingCta')) {
-        document.getElementById('authPanel')?.classList.add('open');
+        setAuthPanelOpen(true, { focus: true });
         return;
       }
 
